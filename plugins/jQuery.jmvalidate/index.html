@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>$.jmvalidate $.jmucvalidate插件demo演示</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.jmvalidate.js" data-h5f="js/H5F.js"></script>
+<link href="../../global/base.css" rel="stylesheet" type="text/css">
+<style>
+fieldset {
+	border: 1px dashed green;
+	padding: 1em;
+	margin: 1em;
+}
+fieldset span {
+	display: inline-block;
+	text-align: right;
+	width: 7em;
+}
+fieldset input {
+	margin: 0 1em;
+}
+</style>
+</head>
+<body>
+<div class="SDemo-title">
+	<h1>【$.h5validity】-【qil】-【2013-9-17】-【0.1】-演示：</h1>
+</div>
+<div id="page"><br>
+	<table class="KS-table" border="0" cellpadding="0" cellspacing="0">
+		<caption>
+		【插件使用参数说明表】
+		</caption>
+		<tbody>
+			<tr>
+				<th scope="row">参数名</th>
+				<td>参数值</td>
+				<td>其他描述</td>
+			</tr>
+			<tr>
+				<th rowspan="6" scope="row">options</th>
+				<td>【placeholderClass】（非必须）：【低端浏览器下文本框占位符状态class，高端浏览器下请使用伪类】</td>
+				<td rowspan="6">自定义错误，错误类型查询，其他设置请参考<a href="http://dev.w3.org/html5/spec-preview/constraints.html#the-constraint-validation-api">W3C标准</a></td>
+			</tr>
+			<tr>
+				<td>【requiredClass】（非必须）：【低端浏览器下表单元素必填项缺失状态class，高端浏览器下请使用伪类】</td>
+			</tr>
+			<tr>
+				<td>【invalidClass】（非必须）：【低端浏览器下表单元素验证成功状态class，高端浏览器下请使用伪类】</td>
+			</tr>
+			<tr>
+				<td>【validClass】（非必须）：【低端浏览器下表单元素验证失败状态class，高端浏览器下请使用伪类】</td>
+			</tr>
+			<tr>
+				<td>【validity】（非必须）：invalid事件处理函数，支持动态加载节点</td>
+			</tr>
+			<tr>
+				<td>【events】（非必须）：除浏览器默认外要要进行表单验证的事件（多个事件空格分隔）</td>
+			</tr>
+		</tbody>
+	</table>
+	<br>
+	<hr>
+	<br>
+	<h3>引用方式：</h3>
+	<pre class="prettyprint">
+&lt;script type=&quot;text/javascript&quot; src=&quot;js/jquery.jmvalidate.js&quot; data-h5f=&quot;js/H5F.js&quot;&gt;&lt;/script&gt;
+</pre>
+	注意在script标签写入data-h5f属性，以便在低端浏览器中按需加载<br><br>
+	<hr>
+	<h3>示例：</h3>
+	<form id="demo1">
+		<fieldset>
+			<legend>表单验证</legend>
+			<label>
+				<span>用户名</span>
+				<input type="text" title="用户名" required pattern="\w+">不得为空，只能使用数字字母和下划线（非空验证，正则验证）
+			</label>
+			<br>
+			<label>
+				<span>密码</span>
+				<input type="password" title="密码" class="pass1" required>不得为空（非空验证）
+			</label>
+			<br>
+			<label>
+				<span>再次输入密码</span>
+				<input type="password" class="pass2" title="再次输入密码">两次密码必须一致(自定义验证)
+			</label>
+			<br>
+			<input type="submit">
+		</fieldset>
+	</form>
+	<script>
+	$("#demo1").h5validity();
+	$("#demo1 input").bind("invalid", function(){
+		var name = $(this).attr("title") || "",
+			msg;
+		if(this.validity.valueMissing){
+			msg = name + "不得为空";
+		} else if (this.validity.patternMismatch) {
+			msg = name + "格式错误";
+		} else {
+			msg = this.validationMessage;
+		}
+		alert(msg);
+	});
+	$("#demo1 :password").bind("change input", function(){
+		$("#demo1 .pass2")[0].setCustomValidity($("#demo1 .pass1").val() == $("#demo1 .pass2").val() ? "" : "两次密码输入不一致");
+	});
+	</script>
+	<h4> 引用方式：</h4>
+	<pre class="prettyprint linenums">
+&lt;form id=&quot;demo1&quot;&gt;
+	&lt;fieldset&gt;
+		&lt;legend&gt;表单验证&lt;/legend&gt;
+		&lt;label&gt;
+			&lt;span&gt;用户名&lt;/span&gt;
+			&lt;input type=&quot;text&quot; title=&quot;用户名&quot; required pattern=&quot;\w+&quot;&gt;不得为空，只能使用数字字母和下划线（非空验证，正则验证）
+		&lt;/label&gt;
+		&lt;br&gt;
+		&lt;label&gt;
+			&lt;span&gt;密码&lt;/span&gt;
+			&lt;input type=&quot;password&quot; title=&quot;密码&quot; class=&quot;pass1&quot; required&gt;不得为空（非空验证）
+		&lt;/label&gt;
+		&lt;br&gt;
+		&lt;label&gt;
+			&lt;span&gt;再次输入密码&lt;/span&gt;
+			&lt;input type=&quot;password&quot; class=&quot;pass2&quot; title=&quot;再次输入密码&quot;&gt;两次密码必须一致(自定义验证)
+		&lt;/label&gt;
+		&lt;br&gt;
+		&lt;input type=&quot;submit&quot;&gt;
+	&lt;/fieldset&gt;
+&lt;/form&gt;
+</pre>
+	<pre class="prettyprint linenums">
+$(&quot;#demo1&quot;).h5validity();
+$(&quot;#demo1 input&quot;).bind(&quot;invalid&quot;, function(){
+	var name = $(this).attr(&quot;title&quot;) || &quot;&quot;,
+		msg;
+	if(this.validity.valueMissing){
+		msg = name + &quot;不得为空&quot;;
+	} else if (this.validity.patternMismatch) {
+		msg = name + &quot;格式错误&quot;;
+	} else {
+		msg = this.validationMessage;
+	}
+	alert(msg);
+});
+$(&quot;#demo1 :password&quot;).bind(&quot;change input&quot;, function(){
+	$(&quot;#demo1 .pass2&quot;)[0].setCustomValidity($(&quot;#demo1 .pass1&quot;).val() == $(&quot;#demo1 .pass2&quot;).val() ? &quot;&quot; : &quot;两次密码输入不一致&quot;);
+});
+</pre>
+	<hr>
+	js强制提交不验证
+	<pre class="prettyprint">
+$("form").submit();
+</pre>
+	<hr>
+	js强制验证一次
+	<pre class="prettyprint">
+$("form")[0].checkValidity();
+</pre>
+	<hr>
+	$.jmucvalidate与$.h5validity用法一致，但添加了用户中心的错误提示样式。
+</div>
+<link rel="Stylesheet" type="text/css" href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css">
+<script type="text/javascript"  src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script>
+<script>
+prettyPrint();
+</script>
+</body>
+</html>

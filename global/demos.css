@@ -151,3 +151,27 @@ div.demo-description { clear: both; padding: 12px; font-family: "Trebuchet MS", 
 #widget-docs .ui-tabs-panel { padding: 20px 9px; font-size: 12px; line-height: 1.4; color: #000; }
 #widget-docs .ui-widget-content a:link, #widget-docs .ui-widget-content a:visited { color: #1b75bb; text-decoration: none; }
 #widget-docs .ui-widget-content a:hover, #widget-docs .ui-widget-content a:active { color: #0b559b; }
+.frames .demos-nav {
+	border-right: 1px solid #eee;
+	position: fixed;
+	height: 100%;
+	left: 0;
+	top: 0;
+	_position: absolute;
+}
+.frames,
+.frames div,
+.frames body,
+.frames iframe {
+	overflow: hidden;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+.frames div {
+	margin-left: 180px;
+}
+.frames iframe {
+	overflow-y: auto;
+}

@@ -14,6 +14,7 @@
  * options.error 图片地址错误时回调，回调中this为Image
  * @return {Object} jQuery对象
  */
+"use strict";
 (function($) {
 	//寄存错误的URL
 	var urlErrs = {};

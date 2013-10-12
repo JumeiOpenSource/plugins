@@ -36,23 +36,29 @@
 
 		//建立下拉菜单
 		function createMenu(selectui, select){
-			var menu = createOpts(create("select_menu_ui").delegate(".option_ui", "mouseenter", function(e) {
-				$(this).addClass("option_hover_ui").siblings().removeClass("option_hover_ui");
-			}), select).appendTo(selectui).hover(function(){
+			return createOpts(create("select_menu_ui"), select).appendTo(selectui).hover(function(){
 				$(this).width(this.clientWidth);
 			},function(){
 				$(this).width("");
 			});
-			return menu;
 		}
 
 		//建立下拉菜单中的选项
 		function createOpts(menu, select){
 			menu.html("");
 			$.each(select.options, function(i){
-				create("option_ui").html(this.innerHTML + "&nbsp;").click(function(e) {
-					select.selectedIndex = i;
-					$(select).trigger("change");
+				var option = this;
+				create("option_ui").html(option.innerHTML + "&nbsp;").click(function(e) {
+					if(option.disabled){
+						return false
+					} else {
+						select.selectedIndex = i;
+						$(select).trigger("change");
+					}
+				}).bind("mouseenter", function(e) {
+					option.disabled || $(this).addClass("option_hover_ui").siblings().removeClass("option_hover_ui");
+				}).css({
+					color: option.disabled ? "gray" : ""
 				}).appendTo(menu);
 			});
 			menu.children().eq(select.selectedIndex).addClass("option_hover_ui");

@@ -35,3 +35,15 @@ table.KS-table { border-top: none; border-right: none; border-bottom: 1px solid 
 table.KS-table caption { height: 40px; line-height: 40px; border: 1px solid #6790ad; border-bottom: 0 none; padding-left: 10px; font-size: 12px; font-weight: 700; color: #F00; background-color: #EFF3F8 }
 table.KS-table td, table.KS-table th { border-top: 1px solid #6790ad; border-right: 1px solid #6790ad; border-bottom: none; border-left: 0; padding: 3px }
 table.KS-table th { height: 30px; background-color: #EFF3F8 }
+
+/*代码格高亮显示*/
+.linenums .linenums {
+	background: white;
+	overflow: auto;
+}
+pre .linenums li {
+	border-left: 2px solid green;
+	list-style-type: decimal;
+	padding-left: 1em;
+	margin-left: 4em;
+}

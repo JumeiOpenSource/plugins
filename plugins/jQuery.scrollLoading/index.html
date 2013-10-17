@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>$.scrollLoading插件demo演示</title>
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.scrollLoading.js" data-h5f="js/H5F.js"></script>
+<link href="../../global/base.css" rel="stylesheet" type="text/css">
+<style>
+ol {
+	list-style-type: decimal;
+	margin-left: 2em;
+}
+.lazyload {
+	border: 2px solid green;
+	margin: 0 100px;
+}
+</style>
+</head>
+<body>
+<div class="SDemo-title">
+	<h1>【$.scrollLoading】-【qil】-【2013-10-9】-【0.1】-演示：</h1>
+</div>
+<br>
+<table class="KS-table" border="0" cellpadding="0" cellspacing="0">
+	<caption>
+	【插件使用参数说明表】
+	</caption>
+	<tbody>
+		<tr>
+			<th scope="row">参数名</th>
+			<td>参数值</td>
+			<td>其他描述</td>
+		</tr>
+		<tr>
+			<th rowspan="4" scope="row">options</th>
+			<td>【attr】（默认"data-url"）：【储存懒加载内容的url的属性名】</td>
+			<td rowspan="4">自定义错误，错误类型查询，其他设置请参考<a href="http://dev.w3.org/html5/spec-preview/constraints.html#the-constraint-validation-api">W3C标准</a></td>
+		</tr>
+		<tr>
+			<td>【container】（默认$(window)）：【滚动事件监听对象】</td>
+		</tr>
+		<tr>
+			<td>【callback】（非必须）：【回调函数】</td>
+		</tr>
+		<tr>
+			<td>【error】（默认onImgError，口碑整站全局声明的图片异常处理）：【异常处理函数】</td>
+		</tr>
+	</tbody>
+</table>
+<br>
+<h2>图片按需加载组件/图片异常处理组件/HTML按需加载组件/js按需运行组件</h2>
+<hr>
+由$.lazyload演变而来，但有所区别：
+<ol>
+	<li>当前不可见状态的图片不会像lazyload那样直接加载</li>
+	<li>图片懒加载时加入异常处理机制（也可不做加载，就现有图片做异常处理）</li>
+	<li>支持懒加载HTML</li>
+	<li>支持懒加载后回调（也可不做加载，纯回调）</li>
+</ol>
+<hr>
+<h3>引用方式：</h3>
+<pre class="prettyprint linenums">
+$(&quot;.lazyload, img&quot;).scrollLoading({
+	error: function(){
+		console.log(this);
+	},
+	callback: function(){
+		console.log(this.src || $(this).attr(&quot;data-url&quot;));
+	}
+});
+</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<div style="text-align: center;">以下绿框为HTML懒加载内容</div>
+<div class="lazyload" data-url="../jQuery.selectui/index.html pre">
+	数据正在加载中...<br>
+	如果加载失败请在服务器环境运行本demo或换用火狐测试
+</div>
+HTML:
+<pre class="prettyprint linenums">&lt;div class=&quot;lazyload&quot; data-url=&quot;../jQuery.selectui/index.html pre&quot;&gt;
+	数据正在加载中...&lt;br&gt;
+	如果加载失败请在服务器环境运行本demo或换用火狐测试
+&lt;/div&gt;
+</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1381244875.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1381244875.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1379909315.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1380526663.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1378177477.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img data-url="http://p0.jmstatic.com/product_report/advertising/ad_image/1375248883.jpg"><br>
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;http://p0.jmstatic.com/product_report/advertising/ad_image/1380187643.jpg&quot;&gt;</pre>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+请向下滚动<br>
+<img style="border: 2px solid green; width: 200px; height: 200px; display: block; background: url(http://p0.jmstatic.com/product_report/newKoubei/images/1/loading.gif) no-repeat center" alt="该图片加载失败" data-url="./noop.img">
+HTML:
+<pre class="prettyprint">&lt;img data-url=&quot;./noop.img&quot;&gt;
+</pre>
+<script>
+	$(".lazyload, img").scrollLoading({
+		error: function(){
+			console.log(this);
+		},
+		callback: function(){
+			console.log(this.src || $(this).attr("data-url"));
+		}
+	});
+</script>
+<link rel="Stylesheet" type="text/css" href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css">
+<script type="text/javascript"  src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js"></script> 
+<script>
+prettyPrint();
+</script>
+</body>
+</html>

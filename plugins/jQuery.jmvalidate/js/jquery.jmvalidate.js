@@ -6,6 +6,7 @@
  * $.fn.jmucvalidate
  * 用户中心的表单验证函数，基于$.fn.h5validity，实现了错误提示样式
  */
+"use strict";
 (function($){
 	var input = $("<input>")[0],
 		support = "validity" in input && "checkValidity" in input;	

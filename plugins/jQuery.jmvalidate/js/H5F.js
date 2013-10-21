@@ -329,7 +329,9 @@
 		evt = evt || window.event;
 		
 		if(evt.preventDefault) {
-			(evt.stopImmediatePropagation || evt.stopPropagation)();
+			try{
+				(evt.stopImmediatePropagation || evt.stopPropagation)();
+			} catch(ex) {}
 			evt.preventDefault();
 		} else {
 			evt.cancelBubble = true;

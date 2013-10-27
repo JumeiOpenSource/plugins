@@ -35,8 +35,11 @@
 		//将现有表单元素去除默认行为
 		prevent(form.elements);
 		$(form).bind("DOMNodeInserted", function(e){
-			//将动态添加的元素去除默认行为
-			prevent(e.target);
+			var target = e.target;
+			if("validity" in target && "checkValidity" in target){
+				//将动态添加的元素去除默认行为
+				prevent(target);
+			}
 		}).delegate(":submit", "click", function(e){
 			//由于阻止了默认事件，需要重新模拟焦点行为
 			var invalid = this.form.querySelector(":invalid");
@@ -59,13 +62,17 @@
 			invalidClass : "",
 			validClass : "",
 		}, opt);
+
 		if(opt.events){
-			this.bind(opt.events, function(e){
-				if(e.target.checkValidity && e.target.checkValidity()){
-					validityCall(opt, e);
-				}
-			});
+			for(var i in opt.events){
+				this.delegate(i, opt.events[i], function(e){
+					if(e.target.checkValidity && e.target.checkValidity()){
+						validityCall(opt, e);
+					}
+				});
+			}
 		}
+
 		return this.each(function(){
 			initInvalid(this, opt);
 		});
@@ -94,7 +101,9 @@
 	$.fn.jmucvalidate = function(opt){
 		return this.h5validity($.extend({
 			validity: jmucValidity,
-			events: "change"
+			events: {
+				"*": "change"
+			}
 		}, opt));
 	}
 })(jQuery);

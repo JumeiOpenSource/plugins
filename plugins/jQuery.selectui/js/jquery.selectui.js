@@ -2,14 +2,15 @@
 (function($){
 	var msie = (function(w,d){return ("XMLHttpRequest" in w ? d.querySelector ? d.documentMode : 7 : 6)})(top,top.document),
 		minWidth = msie < 7 ? "width" : "minWidth",
-		selectQueue;
+		selectQueue,
+		fixie;
 
 	function create(className, nodeName){
 		return $("<" + ( nodeName || "div" ) + "/>").addClass(className);
 	}
 
 	if( msie < 8 ) {
-		(function(){
+		fixie = (function(){
 			function fixie(selectui, select){
 				if(selectui.find(".select_menu_ui").length){
 					return;
@@ -98,6 +99,8 @@
 			$(document).click(function(e){
 				hideAll($(e.target).closest(".select_ui"));
 			});
+
+			return fixie;
 		})();
 	}
 
@@ -178,7 +181,7 @@
 				}).each(function(){
 					modifyText(this);
 				});
-				if( msie < 8 ) {
+				if( fixie ) {
 					//IE6、7中模拟select，并非原生
 					fixie(selectui, this);
 				} else {

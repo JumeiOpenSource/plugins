@@ -15,7 +15,7 @@
 	(function(d){
 		if(!support){
 			var scrNode = $(d.scripts ? d.scripts[d.scripts.length - 1] : "script:last");
-			scrNode.attr("src", scrNode.attr("data-h5f"));
+			$("<script>").attr("src", scrNode.attr("data-h5f")).insertAfter(scrNode);
 		}
 	})(document);
 
@@ -47,6 +47,7 @@
 		});
 	} : function(form, opt){
 		//不支持HTML5验证的浏览器，使用H5F
+		opt.jQuery = $;
 		H5F.setup(form, opt);
 		$(form).bind("invalid", function(e){
 			e.stopImmediatePropagation();

@@ -9,7 +9,8 @@
 "use strict";
 (function($){
 	var input = $("<input>")[0],
-		support = "validity" in input && "checkValidity" in input;	
+		support = "validity" in input && "checkValidity" in input,
+		initInvalid;	
 
 	//如果浏览器不支持HTML5,则加载h5f.js
 	(function(d){
@@ -19,13 +20,14 @@
 		}
 	})(document);
 
+	//回调的触发
 	function validityCall(opt, e){
 		if(opt.validity){
-			opt.validity.call(e.targe, e);
+			opt.validity.call(e.target, e);
 		}
 	}
 	//支持HTML5验证的浏览器，为了去掉默认样式，阻止全部浏览器默认行为；
-	var initInvalid = support ? function(form, opt){
+	initInvalid = support ? function(form, opt){
 		function prevent(node){
 			$(node).bind("invalid", function(e){
 				e.preventDefault();
@@ -58,10 +60,10 @@
 	/*表单验证公共组件*/
 	$.fn.h5validity = function(opt){
 		opt = $.extend({
-			placeholderClass : "",
-			requiredClass : "",
-			invalidClass : "",
-			validClass : "",
+			validClass : "valid",
+			invalidClass : "error",
+			requiredClass : "required",
+			placeholderClass : "placeholder"
 		}, opt);
 
 		if(opt.events){

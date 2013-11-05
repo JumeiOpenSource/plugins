@@ -13,35 +13,38 @@
         jQuery(function ($) {
             //搜索自动提示
             $.fn.searchTips = function (opts) {
-                var defaultOpts = {tipsID: 'searchTips', addClass: 'searchTips'};
+                var defaultOpts = {tipsID: 'searchTips', addClass: 'searchTips'},$this=$(this);
                 var options = $.extend({}, defaultOpts, opts || {});
-                if ($(this).length > 0) {
+                if ($this.length > 0) {
                     var _thisform = $(this).parent('form');
                     if (_thisform.length == 0) {
                         _thisform = $(this).parent().parent('form');
                     }
-                    $(this).autoTips({tipsID: options.tipsID, addClass: options.addClass, type: 'ajax', callback: function (opts) {
-                        $.ajax({dataType: 'jsonp', url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&n=' + Math.random() + '&callback=?&search=' + $(this).val(), jsonpCallback: 'searchCallback',
-                            success: function (data) {
-                                var dataList = [], index = 0;
-                                for (var item in data) {
-                                    dataList[index] = [item];
-                                    index++;
+                    $this.autoTips({tipsID: options.tipsID, addClass: options.addClass, type: 'ajax', dataType: 'jsonp', jsonpCallback: 'searchCallback',
+                        url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&search=',
+                        dataSource: function (opts) {
+                            $.ajax({dataType: 'jsonp', url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&n=' + Math.random() + '&callback=?&search=' + $this.val(), jsonpCallback: 'searchCallback',
+                                success: function (data) {
+                                    var dataList = [], index = 0;
+                                    for (var item in data) {
+                                        dataList[index] = [item];
+                                        index++;
+                                    }
+                                    if (dataList.length == 0) return false;
+                                    _creatTipsElement(dataList, opts);
                                 }
-                                if (dataList.length == 0) return false;
-                                _creatTipsElement(dataList, opts);
-                                // $('#searchTips').show();
-                            }
-                        });
-                    }, listClickCallback: function () {
-                        _thisform.submit();
-                    }
+                            });
+                        },
+                        listClickCallback: function () {
+                            _thisform.submit();
+                        }
                     });
                 }
             }
             if ($('#search_input').length == 1) {
                 $('#search_input').searchTips();
             }
+            $('#username').autoTips({tipsID: 'searchTips2', addClass: 'searchTips', type: 'email', dataSource: ['@qq.com', '@126.com', '@163.com', '@vip.qq.com', '@yeah.net', '@hotmail.com', '@sina.com', '@sina.cn', '@yahoo.com.cn', '@yahoo.cn', '@gmail.com', '@21cn.com', '@tom.com', '@139.com']});
         });
     </script>
 </head>
@@ -128,7 +131,7 @@
     <hr>
     <br>
 
-    <h3>示例一：</h3>
+    <h3>示例一：根据抛入内容异步获取数据</h3>
 
     <div id="temp1">
         <div class="containerBgR">
@@ -139,8 +142,8 @@
                         <div class="search_box search_box_pr">
                             <div class="search_icon"></div>
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" autocomplete="off" name="keyword" value="欧莱雅 抗衰老"
-                                         id="search_input"
-                                   class="search_input">
+                                                                 id="search_input"
+                                                                 class="search_input">
                             <input type="submit" value="搜 索" class="search_text">
                         </div>
                     </form>
@@ -156,6 +159,34 @@
 });
 </pre>
 
+
+    <h3>示例二：邮箱自动完成功能</h3>
+
+    <div id="temp2">
+        <div class="containerBgR">
+            <div class="pfRadius7XContent">
+                <div class="search_none_box">
+
+
+                    <div class="search_box search_box_pr">
+                        <div class="search_icon"></div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" autocomplete="off" name="keyword" value=""
+                                                             id="username"
+                                                             class="search_input">
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+  <pre>$("#temp1").Slide({
+    effect : "scroolY",
+    speed : "normal",
+    timer : 3000
+});
+</pre>
 </div>
 </body>
 </html>

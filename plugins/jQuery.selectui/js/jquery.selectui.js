@@ -162,7 +162,7 @@
 				select = $(this),
 				selectui = select.closest(".select_ui");
 
-			if(select.is(":visible")){
+			if(select.css("display") !== "none"){
 
 				//给select标签加包裹
 				if(!selectui.length){

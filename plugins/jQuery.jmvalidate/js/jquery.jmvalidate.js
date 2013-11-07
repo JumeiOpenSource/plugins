@@ -46,7 +46,7 @@
 			$(node).bind("invalid", function(e){
 				e.preventDefault();
 				validityCall(opt, e);
-			})
+			});
 		}
 		//将现有表单元素去除默认行为
 		prevent(form.elements);
@@ -60,8 +60,8 @@
 			//由于阻止了默认事件，需要重新模拟焦点行为
 			var invalid = this.form.querySelector(":invalid");
 			invalid && invalid.focus();
-		}).bind("change input", function(e){
-			toggleClass(e.targe, opt);
+		}).bind("change", function(e){
+			toggleClass(e.target, opt);
 		});
 	} : function(form, opt){
 		//不支持HTML5验证的浏览器，使用H5F
@@ -85,7 +85,8 @@
 		if(opt.events){
 			for(var i in opt.events){
 				this.delegate(i, opt.events[i], function(e){
-					if(e.target.checkValidity && e.target.checkValidity()){
+					var input = e.target;
+					if(input.checkValidity && input.checkValidity()){
 						validityCall(opt, e);
 					}
 				});
@@ -95,7 +96,7 @@
 		return this.each(function(){
 			initInvalid(this, opt);
 		});
-	}
+	};
 
 	/*用户中心表单验证*/
 	function jmucValidity(e){
@@ -106,7 +107,7 @@
 			c = me.closest(".input_container");
 		for(var i in v){
 			var msg = c.find("." + i).toggle(v[i]);
-			if(msg.css("display")== "inline"){
+			if(msg.css("display") === "inline"){
 				msg.css({
 					display: "inline-block"
 				});
@@ -114,7 +115,7 @@
 		}
 		var wrap = me.closest(".select_ui, .radio_ui, .checkbox_ui");
 		me = wrap.length ? wrap : me;
-		me.toggleClass((nodeName == "input" ? ("input_" + (me.attr("type") || e.target.type)) : nodeName) + "_err", !v.valid);
+		me.toggleClass((nodeName === "input" ? ("input_" + (me.attr("type") || e.target.type)) : nodeName) + "_err", !v.valid);
 	}
 	/*用户中心表单验证*/
 	$.fn.jmucvalidate = function(opt){
@@ -124,5 +125,5 @@
 				"*": "change"
 			}
 		}, opt));
-	}
+	};
 })(jQuery);

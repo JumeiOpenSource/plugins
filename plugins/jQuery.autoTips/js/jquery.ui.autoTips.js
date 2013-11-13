@@ -10,29 +10,36 @@
             if (_this.attr('defaultIndex')) {
                 opts.defaultIndex = _this.attr('defaultIndex');
             }
+            _this.tempVal=_this.val();
             (function (opts) {
-                _this.keyup(function (event) {
-                    clearTimeout(_this.searching);
-                    _this.searching = setTimeout(function () {
-                        var key = event.which, txtVal = _this.val(), tipsID = $('#' + opts.tipsID), li_list = $('#' + opts.tipsID).find('li');
-                        if (key == 13) {//回车
-                            if (tipsID.is(':visible')) {
-                                _this.val(li_list.eq(getCurIndex(li_list, key, opts)).html());
-                                tipsID.hide();
-                                return false;
-                            }
-                        } else if (key == 40 || key == 38) {//上下键输入38为上，40为下
-                            if (tipsID.is(':visible')) {
-                                var cur_item = li_list.eq(getCurIndex(li_list, key, opts));
-                                cur_item.addClass('tips_hover').siblings().removeClass('tips_hover');
-                                _this.val(cur_item.html());
-                            }
-                        } else if (key != 13 && key != 40 && key != 38) {//获取数据
-                            if ($.trim(txtVal) == "") {
-                                tipsID.hide();
-                                return false;
-                            }
+                var tipsID, li_list;
+                _this.keydown(function (event) {
+                    var key = event.which;
+                    tipsID = $('#' + opts.tipsID), li_list = tipsID.find('li');
+                    if (key == 13) {//回车
+                        if (tipsID.is(':visible')) {
+                            _this.val(li_list.eq(getCurIndex(li_list, key, opts)).html());
+                            tipsID.hide();
+                            event.preventDefault();
+                            return false;
+                        }
+                    } else if (key == 40 || key == 38) {//上下键输入38为上，40为下
+                        if (tipsID.is(':visible')) {
+                            var cur_item = li_list.eq(getCurIndex(li_list, key, opts));
+                            cur_item.addClass('tips_hover').siblings().removeClass('tips_hover');
+                            _this.val(cur_item.html());
 
+                        }
+                        event.preventDefault();
+                    } else if (key != 13 && key != 40 && key != 38) {//获取数据
+                        clearTimeout(_this.searching);
+                        _this.searching = setTimeout(function () {
+                            var txtVal = _this.val();
+                            if (_this.tempVal=== txtVal || $.trim(txtVal) == "") {
+                                tipsID.hide();
+                                return false;
+                            }
+                            _this.tempVal== txtVal;
                             if (opts.type === 'email') {
                                 var dataSource = $.isFunction(opts.dataSource) ? dataSource.call(this, opts) : opts.dataSource;
                                 //根据输入重构提示内容列表
@@ -57,26 +64,23 @@
                                     _creatTipsElement(dataSource, opts);
                                 }
                                 //根据输入重构提示内容列表 END
-                                li_list = $('#' + opts.tipsID).find('li');
+                                li_list = tipsID.find('li');
                                 li_list.each(function () {
                                     $(this).html(prefix + $(this).attr('data'));
                                 }).eq(opts.defaultIndex).addClass('tips_hover').html(txtVal);
-                            } else if($.isFunction(opts.dataSource)) {
-                                opts.dataSource.call(this,opts);
-
+                            } else if ($.isFunction(opts.dataSource)) {
+                                opts.dataSource.call(this, opts);
                             }//opts.type==='email' EMD
-                            if (opts.callback) {
-                                opts.callback.call(this, opts);
-                            }
-                            tipsID.show();
+                        }, opts.delay);
+                        if (opts.callback) {
+                            opts.callback.call(this, opts);
                         }
-                    }, opts.delay);
-
-
+                        tipsID.show();
+                    }
                 });
                 //获取当前选中的提示项
                 getCurIndex = function (li_list, keyCode, opts) {
-                    var curIndex = li_list.index($('#' + opts.tipsID).find('.tips_hover'));
+                    var curIndex = li_list.index(tipsID.find('.tips_hover'));
                     if (keyCode == 40) {
                         curIndex += 1;
                     }
@@ -86,7 +90,7 @@
                     if (curIndex >= li_list.length) {
                         curIndex = 0;
                     } else if (curIndex < 0) {
-                        curIndex = li_list.length;
+                        curIndex = li_list.length-1;
                     }
                     return curIndex;
                 };
@@ -97,7 +101,7 @@
                     if (opts.autoWidth) {
                         width_style = 'style="width:' + _this.width() + 'px"';
                     }
-                    var TipsObj = $('<div id="' + opts.tipsID + '" ' + width_style + ' ></div>'), list = [];
+                    tipsID = $('<div id="' + opts.tipsID + '" ' + width_style + ' ></div>'), list = [];
                     list.push('<ul>');
                     if (dataSource.length > 0) {
                         for (var i = 0; i < dataSource.length; i++) {
@@ -105,19 +109,19 @@
                         }
                     }
                     list.push('</ul>');
-                    var liList = TipsObj.append(list.join('')).find('li');
+                    li_list = tipsID.append(list.join('')).find('li');
                     if (opts.type == 'email') {
-                        liList = TipsObj.find('li:not(:first)');
+                        li_list = tipsID.find('li:not(:first)');
                     } else if (opts.listCallback) {
                         $.each(opts.listCallback, function (name, fn) {
-                            liList.bind(name, function () {
+                            li_list.bind(name, function () {
                                 fn.apply(this);
                             });
                         });
                     }
-                    liList.click(function () {
+                    li_list.click(function () {
                         opts.inputObj.val($(this).html());
-                        TipsObj.hide();
+                        tipsID.hide();
                         if (opts.listClickCallback) {
                             opts.listClickCallback.call(this, opts);
                         }
@@ -126,20 +130,20 @@
                         }, function () {
                             $(this).removeClass('tips_hover');
                         });
-                    $('body').append(TipsObj);
-                    TipsObj.position({
+                    $('body').append(tipsID);
+                    tipsID.position({
                         my: "left top",
                         at: "left bottom",
                         of: opts.inputObj,
                         collision: "none"
                     }).hide();
                     if (opts.addClass) {
-                        TipsObj.addClass(opts.addClass);
+                        tipsID.addClass(opts.addClass);
                     }
-                    $('#' + opts.tipsID).show();
+                    tipsID.show();
                     opts.inputObj.blur(function () {
                         setTimeout(function () {
-                            $('#' + opts.tipsID).hide();
+                            tipsID.hide();
                         }, 150);
                     });
                 }; //_creatTipsElement END
@@ -157,8 +161,7 @@
         defaultIndex: 0,
         type: 'email',
         autoWidth: true,
-        delay: 200,
-        jsonpCallback:null
+        delay: 200
     };
 })(jQuery);
 //jQuery.ui.autoTips.js END

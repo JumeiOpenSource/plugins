@@ -12,38 +12,29 @@
     <script type="text/javascript">
         jQuery(function ($) {
             //搜索自动提示
-            $.fn.searchTips = function (opts) {
-                var defaultOpts = {tipsID: 'searchTips', addClass: 'searchTips'},$this=$(this);
-                var options = $.extend({}, defaultOpts, opts || {});
-                if ($this.length > 0) {
-                    var _thisform = $(this).parent('form');
-                    if (_thisform.length == 0) {
-                        _thisform = $(this).parent().parent('form');
-                    }
-                    $this.autoTips({tipsID: options.tipsID, addClass: options.addClass, type: 'ajax', dataType: 'jsonp', jsonpCallback: 'searchCallback',
-                        url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&search=',
-                        dataSource: function (opts) {
-                            $.ajax({dataType: 'jsonp', url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&n=' + Math.random() + '&callback=?&search=' + $this.val(), jsonpCallback: 'searchCallback',
-                                success: function (data) {
-                                    var dataList = [], index = 0;
-                                    for (var item in data) {
-                                        dataList[index] = [item];
-                                        index++;
-                                    }
-                                    if (dataList.length == 0) return false;
-                                    _creatTipsElement(dataList, opts);
-                                }
-                            });
-                        },
-                        listClickCallback: function () {
-                            _thisform.submit();
+            var $this = $('#search_input');
+            $this.autoTips({tipsID: 'searchTips', addClass: 'searchTips', type: 'ajax',
+                dataSource: function (opts) {
+                    $.ajax({dataType: 'jsonp',
+                        url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&n=' + Math.random() + '&callback=?&search=' + $this.val(), jsonpCallback: 'searchCallback',
+                        success: function (data) {
+                            var dataList = [], index = 0;
+                            for (var item in data) {
+                                dataList[index] = [item];
+                                index++;
+                            }
+                            if (dataList.length == 0) return false;
+                            _creatTipsElement(dataList, opts);
                         }
                     });
+                },
+                //选择后回调事件
+                listClickCallback: function () {
+
+                   // _thisform.submit();
                 }
-            }
-            if ($('#search_input').length == 1) {
-                $('#search_input').searchTips();
-            }
+            });
+            //邮箱自动完成提示
             $('#username').autoTips({tipsID: 'searchTips2', addClass: 'searchTips', type: 'email', dataSource: ['@qq.com', '@126.com', '@163.com', '@vip.qq.com', '@yeah.net', '@hotmail.com', '@sina.com', '@sina.cn', '@yahoo.com.cn', '@yahoo.cn', '@gmail.com', '@21cn.com', '@tom.com', '@139.com']});
         });
     </script>
@@ -53,9 +44,22 @@
     <h1>jQuery.ui.autoTips插件demo-【雷先华】-【版本1.0】-【2013-9-17】演示：</h1>
 </div>
 <div id="page"><br>
+<table class="KS-table" border="0" cellpadding="0" cellspacing="0" width="760">
+    <caption>
+        功能说明
+    </caption>
+    <tbody>
+    <tr>
+        <td>输入自动完成，如搜索自动完成提示，和登录自动完成邮箱等。<br />此插件依赖jquery.ui.position.js</td>
+    </tr>
+    </tbody>
+</table>
+    <br>
+ 
+    
     <table class="KS-table" border="0" cellpadding="0" cellspacing="0" width="760">
         <caption>
-            JQ-Slide插件参数说明表
+            jQuery.ui.autoTips插件参数说明表
         </caption>
         <tbody>
         <tr>
@@ -64,65 +68,44 @@
             <td width="166">&nbsp;</td>
         </tr>
         <tr>
-            <th rowspan="5" scope="row">effect</th>
-            <td>scroolY（默认）：垂直滚动</td>
-            <td rowspan="5">&nbsp;</td>
+            <th rowspan="2" scope="row">dataSource</th>
+            <td>[](默认):当为静态数据时，可以设置为一个数组</td>
+            <td rowspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <td>scroolX：水平滚动</td>
+            <td>function：动态数据时，设置为一个回调函数动态返回数据</td>
         </tr>
         <tr>
-            <td>scroolTxt：文本垂直滚动</td>
-        </tr>
-        <tr>
-            <td>fade：淡出</td>
-        </tr>
-        <tr>
-            <td>scroolLoop：水平左右点击滚动</td>
-        </tr>
-        <tr>
-            <th scope="row">autoPlay</th>
-            <td>true（默认）： or false</td>
+            <th scope="row">autoWidth</th>
+            <td>true（默认）： or false,自动计算宽度，当为True时，则在tipsID对象上添加INPUT对象的宽度</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <th scope="row">speed</th>
-            <td>动画速度时间，默认"normal"，可以使用毫秒或者JQ中的fast，slow，normal</td>
+            <th scope="row">listCallback</th>
+            <td>选择自动完成的回调函数，例如：搜索时选择提示的信息后自动提交表单等；默认为NULL</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <th scope="row">timer</th>
-            <td>滚动间隔时间，默认"1000，可以使用毫秒或者JQ中的fast，slow，normal</td>
+            <th scope="row">tipsID</th>
+            <td>弹出提示信息的DIV层的ID，默认为tips，主要用于绑定CSS样式</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <th scope="row">claNav</th>
-            <td>JQ-slide-nav（默认）：触点对象数组父级</td>
+            <th scope="row">addClass</th>
+            <td>在tipsID上添加CSS className，用于对CSS样式的一些调整，默认为null</td>
             <td>&nbsp;</td>
         </tr>
         <tr>
-            <th scope="row">claCon</th>
-            <td>JQ-slide-content（默认）：滚动对象或滚动对象父级</td>
-            <td>&nbsp;</td>
+            <th rowspan="2" scope="row">type</th>
+            <td>emial：当为&quot;emial&quot;时，则以邮箱自动完成的方式提示</td>
+            <td rowspan="2">&nbsp;</td>
         </tr>
         <tr>
-            <th scope="row">steps</th>
-            <td>1（默认）：滚动几个</td>
-            <td>&nbsp;</td>
+          <td>null(默认)</td>
         </tr>
         <tr>
-            <th scope="row">createPage</th>
-            <td>true(默认):自动创建分页</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <th scope="row">loop</th>
-            <td>true(默认):无限循环</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <th scope="row">slideTitle</th>
-            <td>slideTitle(默认):幻灯标题对象的class</td>
+            <th scope="row">delay</th>
+            <td>200（默认）：毫秒值，用于延迟请求数据，避免过多的反复请求数据</td>
             <td>&nbsp;</td>
         </tr>
         </tbody>
@@ -152,11 +135,29 @@
             </div>
         </div>
     </div>
-  <pre>$("#temp1").Slide({
-    effect : "scroolY",
-    speed : "normal",
-    timer : 3000
-});
+  <pre>var $this = $('#search_input');
+            $this.autoTips({tipsID: 'searchTips', addClass: 'searchTips', type: 'ajax',
+                dataSource: function (opts) {
+                    $.ajax({dataType: 'jsonp',
+                        url: 'http://search.jumei.com/ajax_get_assoc_word?container=top_search_pop_div&n=' + Math.random() 
+				+ '&callback=?&search=' + $this.val(), jsonpCallback: 'searchCallback',
+                        success: function (data) {
+                            var dataList = [], index = 0;
+                            for (var item in data) {
+                                dataList[index] = [item];
+                                index++;
+                            }
+                            if (dataList.length == 0) return false;
+                            _creatTipsElement(dataList, opts);
+                        }
+                    });
+                },
+                //选择后回调事件
+                listClickCallback: function () {
+
+                   // _thisform.submit();
+                }
+            });
 </pre>
 
 
@@ -181,12 +182,10 @@
             </div>
         </div>
     </div>
-  <pre>$("#temp1").Slide({
-    effect : "scroolY",
-    speed : "normal",
-    timer : 3000
-});
-</pre>
+  <pre> //邮箱自动完成提示<br />$('#username').autoTips({tipsID: 'searchTips2', addClass: 'searchTips', type: 'email', 
+	dataSource: ['@qq.com', '@126.com', '@163.com', '@vip.qq.com', '@yeah.net', '@hotmail.com', 
+		'@sina.com', '@sina.cn', '@yahoo.com.cn', '@yahoo.cn', '@gmail.com', '@21cn.com', '@tom.com', '@139.com']
+});</pre>
 </div>
 </body>
 </html>

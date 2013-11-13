@@ -36,7 +36,7 @@ table.KS-table caption { height: 40px; line-height: 40px; border: 1px solid #679
 table.KS-table td, table.KS-table th { border-top: 1px solid #6790ad; border-right: 1px solid #6790ad; border-bottom: none; border-left: 0; padding: 3px }
 table.KS-table th { height: 30px; background-color: #EFF3F8 }
 
-/*代码格高亮显示*/
+/* 浠ｇ爜楂樹寒鍔熻兘 */
 .linenums .linenums {
 	background: white;
 	overflow: auto;

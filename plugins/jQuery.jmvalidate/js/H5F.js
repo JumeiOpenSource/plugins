@@ -2,8 +2,8 @@
 * https://github.com/ryanseddon/H5F/
 * Copyright (c) Ryan Seddon | Licensed MIT */
 (function (root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
+	if (typeof define === 'function' && (define.amd || define.cmd)) {
+		// AMD or CMD. Register as an anonymous module.
 		define(factory);
 	} else {
 		// Browser globals
@@ -18,7 +18,7 @@
 		nodes = /^(input|select|textarea)$/i,
 		$, btnSubmit, isSubmit, bypassSubmit, usrPatt, curEvt, args,
 		// Methods
-		setup, validation, validity, checkField, bypassChecks, checkValidity, setCustomValidity, support, pattern, placeholder, range, required, valueMissing, listen, unlisten, preventActions, getTarget, addClass, removeClass, isHostMethod, isSiblingChecked;
+		setup, validation, validity, checkField, bypassChecks, checkValidity, setCustomValidity, support, pattern, placeholder, range, required, valueMissing, listen, unlisten, preventActions, getTarget, hasClass, addClass, removeClass, isHostMethod, isSiblingChecked;
 	
 	setup = function(form, settings) {
 
@@ -39,9 +39,8 @@
 		
 		if(form && form.nodeType) {
 			validation(form);
-		} else {
-			form = form || d.forms;
-			for(var k=0,len=form.length;k<len;k++) {
+		} else if(form = form || d.forms){
+			for(var k=0;k<form.length;k++) {
 				validation(form[k]);
 			}
 		}
@@ -182,13 +181,15 @@
 		}
 	};
 	triggerInvalid = function(el) {
-		// 模拟“invalid”事件
+	        // trigger invalid event
 		if((!isSubmit || btnSubmit) && !el.validity.valid){
 			try {
+				/* FF & Other Browsers */
 				var e = d.createEvent("HTMLEvents");
 				e.initEvent("invalid", false, true);
-				return el.dispatchEvent(e);
+				el.dispatchEvent(e);
 			}catch(ex){
+		                /* Internet Explorer priority use jQuery way */
 				if($) {
 					$(el).trigger("invalid");
 				}
@@ -196,20 +197,17 @@
 		}
 	};
 	setCustomValidity = function(msg) {
-		var el = this;
-		checkField(el);
-		el.validationMessage = msg;
+	        this.validationMessage = msg;
+	        checkField(this);
 	};
 	
 	bypassChecks = function(e) {
 		// handle formnovalidate attribute
 		var el = getTarget(e);
 
-		if(el.type === "submit"){
-			btnSubmit = true;
-			if(el.attributes["formnovalidate"]) {
-				bypassSubmit = true;
-			}
+		btnSubmit = el.type === "submit";
+		if(btnSubmit){
+			bypassSubmit = !!el.attributes["formnovalidate"];
 		}
 	};
 
@@ -297,13 +295,13 @@
 	
 	/* Util methods */
 	listen = function (node,type,fn,capture) {
-		if(isHostMethod(window,"addEventListener")) {
+		if(node.addEventListener) {
 			/* FF & Other Browsers */
 			node.addEventListener( type, fn, capture );
 		} else if ($) {
-			//IE中优先使用jQuery注册事件
+			/* Internet Explorer priority use jQuery way */
 			$(node).bind(type, fn);
-		} else {
+		} else if(node.attachEvent) {
 			/* Internet Explorer way */
 			if(type === "blur") {
 				type = "focusout";
@@ -314,24 +312,29 @@
 		}
 	};
 	unlisten = function (node,type,fn,capture) {
-		if(isHostMethod(window,"removeEventListener")) {
+		if(node.removeEventListener) {
 			/* FF & Other Browsers */
 			node.removeEventListener( type, fn, capture );
 		} else if ($) {
-			//IE中优先使用jQuery注册事件
+			/* Internet Explorer priority use jQuery way */
 			$(node).unbind(type, fn);
-		} else {
+		} else if(node.detachEvent) {
 			/* Internet Explorer way */
 			node.detachEvent( "on" + type, fn );
 		}
 	};
 	preventActions = function (evt) {
-		evt = evt || window.event;
-		
-		if(evt.preventDefault) {
-			(evt.stopImmediatePropagation || evt.stopPropagation)();
-			evt.preventDefault();
-		} else {
+		/* FF & Other Browsers & jQuery */
+		if(evt && evt.preventDefault){
+			try {
+				evt.preventDefault();
+				//Sometimes jQuery will throw a error in IE, "evt.stopPropagation is undefined"
+				(evt.stopImmediatePropagation || evt.stopPropagation)();
+				return;
+			} catch(e){}
+		}
+		/* Internet Explorer way */
+		if( evt = window.event ) {
 			evt.cancelBubble = true;
 			evt.returnValue = false;
 		}
@@ -340,27 +343,17 @@
 		evt = evt || window.event;
 		return evt.target || evt.srcElement;
 	};
+	hasClass = function (e,c) {
+		return new RegExp('(^|\\s)' + c + '(\\s|$)').test(e.className);
+	};
 	addClass = function (e,c) {
-		if(c){
-			if (!e.className) {
-				e.className = c;
-			} else {
-				if (!new RegExp('(^|\\s)' + c + '(\\s|$)').test(e.className)) { e.className += ' ' + c; }
-			}
+		if(c && !hasClass(e,c)){
+			e.className += ' ' + c;
 		}
 	};
 	removeClass = function (e,c) {
-		var re, m, arr = (typeof c === "object") ? c.length : 1, len = arr;
-		if (c && e.className) {
-			if (e.className === c) {
-				e.className = '';
-			} else {
-				while(arr--) {
-					re = new RegExp('(^|\\s)' + ((len > 1) ? c[arr] : c) + '(\\s|$)');
-					m = e.className.match(re);
-					if (m && m.length === 3) { e.className = e.className.replace(re, (m[1] && m[2])?' ':''); }
-				}
-			}
+		while(c && hasClass(e,c)){
+			e.className = e.className.replace(new RegExp('(^|\\s+)' + c + '(\\s+|$)'), ' ');
 		}
 	};
 	isHostMethod = function(o, m) {

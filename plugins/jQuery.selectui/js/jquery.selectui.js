@@ -2,14 +2,15 @@
 (function($){
 	var msie = (function(w,d){return ("XMLHttpRequest" in w ? d.querySelector ? d.documentMode : 7 : 6)})(top,top.document),
 		minWidth = msie < 7 ? "width" : "minWidth",
-		selectQueue;
+		selectQueue,
+		fixie;
 
 	function create(className, nodeName){
 		return $("<" + ( nodeName || "div" ) + "/>").addClass(className);
 	}
 
 	if( msie < 8 ) {
-		(function(){
+		fixie = (function(){
 			function fixie(selectui, select){
 				if(selectui.find(".select_menu_ui").length){
 					return;
@@ -98,6 +99,8 @@
 			$(document).click(function(e){
 				hideAll($(e.target).closest(".select_ui"));
 			});
+
+			return fixie;
 		})();
 	}
 
@@ -159,42 +162,45 @@
 				select = $(this),
 				selectui = select.closest(".select_ui");
 
-			//给select标签加包裹
-			if(!selectui.length){
-				selectui = create("select_ui", "span");
-				selectui.insertAfter(select).append(create("select_arrow")).append(select);
-			}
+			if(select.css("display") !== "none"){
 
-			//监听可能改变select选中项的事件
-			select.bind("change propertychange DOMAttrModified DOMNodeInserted DOMNodeRemoved keypress", function(e){
-				//利用定时器过滤多次事件触发，短时间内只运行最后一次
-				clearTimeout(modifyTextTimer);
-				var select = this;
-				modifyTextTimer = setTimeout(function(){
-					modifyText(select);
-				}, e.type == "propertychange" ? 200 : 10);
-			}).each(function(){
-				modifyText(this);
-			});
-			if( msie < 8 ) {
-				//IE6、7中模拟select，并非原生
-				fixie(selectui, this);
-			} else {
-				//其他浏览器添加焦点态样式即可
-				select.focus(function(e){
-					selectui.addClass("select_focus_ui");
-				}).blur(function(e) {
-					selectui.removeClass("select_focus_ui");
+				//给select标签加包裹
+				if(!selectui.length){
+					selectui = create("select_ui", "span");
+					selectui.insertAfter(select).append(create("select_arrow")).append(select);
+				}
+
+				//监听可能改变select选中项的事件
+				select.bind("change propertychange DOMAttrModified DOMNodeInserted DOMNodeRemoved keypress", function(e){
+					//利用定时器过滤多次事件触发，短时间内只运行最后一次
+					clearTimeout(modifyTextTimer);
+					var select = this;
+					modifyTextTimer = setTimeout(function(){
+						modifyText(select);
+					}, e.type == "propertychange" ? 200 : 10);
+				}).each(function(){
+					modifyText(this);
 				});
-			}
-			
-			//解决初始化样式后，其他js又修改select选项
-			if( "onpropertychange" in select[0] ){
-				//IE6、7、8、9下延迟触发一次propertychange，避免初始化后其他js为select单纯增加Option但未去修改selectIndex，从而未触发propertychange事件
-				select.triggerHandler("propertychange");
-			} else {
-				//高端浏览器性能有富余，每隔200毫秒检查一次
-				startInterval(select[0]);
+				if( fixie ) {
+					//IE6、7中模拟select，并非原生
+					fixie(selectui, this);
+				} else {
+					//其他浏览器添加焦点态样式即可
+					select.focus(function(e){
+						selectui.addClass("select_focus_ui");
+					}).blur(function(e) {
+						selectui.removeClass("select_focus_ui");
+					});
+				}
+
+				//解决初始化样式后，其他js又修改select选项
+				if( "onpropertychange" in select[0] ){
+					//IE6、7、8、9下延迟触发一次propertychange，避免初始化后其他js为select单纯增加Option但未去修改selectIndex，从而未触发propertychange事件
+					select.triggerHandler("propertychange");
+				} else {
+					//高端浏览器性能有富余，每隔200毫秒检查一次
+					startInterval(select[0]);
+				}
 			}
 		});
 	};

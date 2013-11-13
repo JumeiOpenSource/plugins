@@ -9,7 +9,8 @@
 "use strict";
 (function($){
 	var input = $("<input>")[0],
-		support = "validity" in input && "checkValidity" in input;	
+		support = "validity" in input && "checkValidity" in input,
+		initInvalid;	
 
 	//如果浏览器不支持HTML5,则加载h5f.js
 	(function(d){
@@ -19,31 +20,52 @@
 		}
 	})(document);
 
+	//回调的触发
 	function validityCall(opt, e){
 		if(opt.validity){
-			opt.validity.call(e.targe, e);
+			opt.validity.call(e.target, e);
 		}
 	}
+
+	//支持HTML5验证的浏览器，使用用户自己的class
+	function toggleClass(node, opt){
+		var v = node.validity;
+		if(v) {
+			node = $(node);
+	
+			opt.validClass && node.toggleClass(opt.validClass, v.valid);
+			opt.invalidClass && node.toggleClass(opt.invalidClass, (!v.valueMissing && !v.valid));
+			opt.requiredClass && node.toggleClass(opt.requiredClass, v.valueMissing);
+			opt.placeholderClass && node.toggleClass(opt.placeholderClass, (!node.val() && node.placeholder));
+		}
+	}
+
 	//支持HTML5验证的浏览器，为了去掉默认样式，阻止全部浏览器默认行为；
-	var initInvalid = support ? function(form, opt){
+	initInvalid = support ? function(form, opt){
 		function prevent(node){
 			$(node).bind("invalid", function(e){
 				e.preventDefault();
 				validityCall(opt, e);
-			})
+			});
 		}
 		//将现有表单元素去除默认行为
 		prevent(form.elements);
 		$(form).bind("DOMNodeInserted", function(e){
-			//将动态添加的元素去除默认行为
-			prevent(e.target);
+			var target = e.target;
+			if("validity" in target && "checkValidity" in target){
+				//将动态添加的元素去除默认行为
+				prevent(target);
+			}
 		}).delegate(":submit", "click", function(e){
 			//由于阻止了默认事件，需要重新模拟焦点行为
 			var invalid = this.form.querySelector(":invalid");
 			invalid && invalid.focus();
+		}).bind("change", function(e){
+			toggleClass(e.target, opt);
 		});
 	} : function(form, opt){
 		//不支持HTML5验证的浏览器，使用H5F
+		opt.jQuery = $;
 		H5F.setup(form, opt);
 		$(form).bind("invalid", function(e){
 			e.stopImmediatePropagation();
@@ -54,22 +76,27 @@
 	/*表单验证公共组件*/
 	$.fn.h5validity = function(opt){
 		opt = $.extend({
-			placeholderClass : "",
-			requiredClass : "",
-			invalidClass : "",
 			validClass : "",
+			invalidClass : "",
+			requiredClass : "",
+			placeholderClass : ""
 		}, opt);
+
 		if(opt.events){
-			this.bind(opt.events, function(e){
-				if(e.target.checkValidity && e.target.checkValidity()){
-					validityCall(opt, e);
-				}
-			});
+			for(var i in opt.events){
+				this.delegate(i, opt.events[i], function(e){
+					var input = e.target;
+					if(input.checkValidity && input.checkValidity()){
+						validityCall(opt, e);
+					}
+				});
+			}
 		}
+
 		return this.each(function(){
 			initInvalid(this, opt);
 		});
-	}
+	};
 
 	/*用户中心表单验证*/
 	function jmucValidity(e){
@@ -80,7 +107,7 @@
 			c = me.closest(".input_container");
 		for(var i in v){
 			var msg = c.find("." + i).toggle(v[i]);
-			if(msg.css("display")== "inline"){
+			if(msg.css("display") === "inline"){
 				msg.css({
 					display: "inline-block"
 				});
@@ -88,13 +115,15 @@
 		}
 		var wrap = me.closest(".select_ui, .radio_ui, .checkbox_ui");
 		me = wrap.length ? wrap : me;
-		me.toggleClass((nodeName == "input" ? ("input_" + (me.attr("type") || e.target.type)) : nodeName) + "_err", !v.valid);
+		me.toggleClass((nodeName === "input" ? ("input_" + (me.attr("type") || e.target.type)) : nodeName) + "_err", !v.valid);
 	}
 	/*用户中心表单验证*/
 	$.fn.jmucvalidate = function(opt){
 		return this.h5validity($.extend({
 			validity: jmucValidity,
-			events: "change"
+			events: {
+				"*": "change"
+			}
 		}, opt));
-	}
+	};
 })(jQuery);
